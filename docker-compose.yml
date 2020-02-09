@@ -1,0 +1,42 @@
+version: '3'
+
+services: 
+    apachephp:
+        build: 
+            context: .
+        ports: 
+            - "80:80"
+        volumes: 
+            - ./public/:/var/www/html
+        networks:
+            - backend
+            - frontend
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        ports: 
+            - "8080:80"
+        environment:
+            PMA_HOST: mysql
+            PMA_PORT: 3306
+        networks:
+            - backend
+    mysql:
+        image: mysql:5.7.22
+        command: --init-file /data/application/init.sql 
+        ports:
+            - "3306:3306"
+        environment:
+            MYSQL_DATABASE: testdb
+            MYSQL_USER: user
+            MYSQL_PASSWORD: user
+            MYSQL_ROOT_PASSWORD: root
+        volumes:
+            - ./db:/var/lib/mysql
+            - ./sql/init.sql:/data/application/init.sql
+        networks:
+            - backend
+networks:
+    backend:
+        driver: bridge
+    frontend:
+        driver: bridge
